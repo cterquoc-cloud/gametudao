@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tu Tiên Chi Lộ - Kim Đan Cảnh</title>
+    <title>Tu Tiên Chi Lộ - Phiên bản Ổn định (Tách Kĩ Năng)</title>
     <style>
         /* SỬA LỖI FULL SCREEN */
         html, body { 
@@ -118,20 +118,7 @@
             pointer-events: none;
         }
         
-        /* Uy Ap button */
-        #uy-ap-btn {
-            position: absolute; left: 160px; bottom: 50px; 
-            width: 70px; height: 70px; 
-            background: linear-gradient(135deg, #FFD700, #FFA500); 
-            border-radius: 50%; border: 2px solid #fff; 
-            display: none; 
-            justify-content: center; align-items: center; 
-            font-size: 30px; color: black; font-weight: bold; cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-            z-index: 11;
-        }
-
-        /* Modal Nhẫn Trữ Vật - Sửa lỗi CSS */
+        /* Modal Nhẫn Trữ Vật */
         #storage-ring-modal {
             position: absolute;
             top: 50%;
@@ -178,7 +165,6 @@
             cursor: pointer;
         }
 
-
         /* Actions Mobile - Căn chỉnh lại sát đáy */
         .control-zone { 
             position: absolute; 
@@ -190,9 +176,22 @@
         #joystick-zone { left: 30px; width: 120px; height: 120px; background: rgba(161, 196, 253, 0.2); border-radius: 50%; border: 2px solid rgba(161, 196, 253, 0.6); display: flex; justify-content: center; align-items: center; }
         #joystick-knob { width: 50px; height: 50px; background: rgba(255, 255, 255, 0.9); border-radius: 50%; position: absolute; }
         
+        /* Nút tấn công cơ bản (Mortal/Ngự Kiếm) */
         #attack-btn { right: 30px; bottom: 30px; width: 90px; height: 90px; background: linear-gradient(135deg, #ff512f, #dd2476); border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 15px rgba(221, 36, 118, 0.6); display: flex; justify-content: center; align-items: center; font-size: 35px; color: white; cursor: pointer; z-index: 11; }
         
-        #meditate-btn { right: 140px; bottom: 50px; width: 70px; height: 70px; background: linear-gradient(135deg, #11998e, #38ef7d); border-radius: 50%; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; cursor: pointer; box-shadow: 0 0 10px rgba(56, 239, 125, 0.5); z-index: 11; }
+        /* Nút Kĩ Năng Công Pháp */
+        #skill-btn { 
+            right: 130px; bottom: 50px; width: 70px; height: 70px; 
+            background: linear-gradient(135deg, #ffd700, #ffa500); /* Màu vàng/cam */
+            border-radius: 50%; border: 2px solid #fff; 
+            display: none; /* Mặc định ẩn, chỉ hiện khi có Công Pháp */
+            justify-content: center; align-items: center; 
+            font-size: 30px; color: black; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.8); 
+            z-index: 11;
+        }
+        
+        #meditate-btn { right: 210px; bottom: 50px; width: 70px; height: 70px; background: linear-gradient(135deg, #11998e, #38ef7d); border-radius: 50%; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; cursor: pointer; box-shadow: 0 0 10px rgba(56, 239, 125, 0.5); z-index: 11; }
 
         /* Nút bay lên */
         #fly-up-btn { 
@@ -235,19 +234,28 @@
         }
         
         @media (min-width: 1024px) {
-            #joystick-zone, #attack-btn, #meditate-btn, #uy-ap-btn, #fly-up-btn, #fly-down-btn { display: none; }
+            #joystick-zone, #attack-btn, #meditate-btn, #fly-up-btn, #fly-down-btn, #skill-btn { display: none; }
             .pc-guide { display: block; }
         }
         /* Mobile Landscape adjustments (Ensure buttons are accessible) */
         @media (max-width: 1023px) and (orientation: landscape) {
-             #meditate-btn { right: 240px; bottom: 30px; }
-             #uy-ap-btn { left: 180px; bottom: 30px; }
+             #meditate-btn { right: 300px; bottom: 30px; }
+             #skill-btn { right: 220px; bottom: 30px; }
+             #attack-btn { right: 30px; bottom: 30px; } 
+
              #fly-up-btn { right: 120px; bottom: 30px; } 
              #fly-down-btn { right: 180px; bottom: 30px; } 
+             
+             #fly-up-btn, #fly-down-btn { bottom: 120px; }
         }
     </style>
 </head>
 <body>
+    <audio id="background-music" loop>
+        <source src="background-music.mp3" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ phần tử audio.
+    </audio>
+
     <div id="game-container"></div>
     <div id="ui-layer">
         <div id="hud-top">
@@ -287,14 +295,15 @@
 
         <div id="joystick-zone" class="control-zone"><div id="joystick-knob"></div></div>
         
-        <div id="uy-ap-btn" class="control-zone">⚡</div> <div id="meditate-btn" class="control-zone">🧘</div>
+        <div id="meditate-btn" class="control-zone">🧘</div>
         
         <div id="fly-up-btn" class="control-zone">⬆️</div> 
         <div id="fly-down-btn" class="control-zone">⬇️</div> 
 
+        <div id="skill-btn" class="control-zone">✨</div>
         <div id="attack-btn" class="control-zone">⚔️</div>
 
-        <div class="pc-guide">WASD: Di chuyển • SPACE: Tấn công • C: Ngồi Thiền • Q: Bay Lên • Z: Bay Xuống • X: Uy Áp</div>
+        <div class="pc-guide">WASD: Di chuyển • SPACE: Tấn công (Cơ Bản) • X: Kĩ Năng Công Pháp • C: Ngồi Thiền • Q: Bay Lên • Z: Bay Xuống</div>
     </div>
 
     <script type="module">
@@ -315,18 +324,29 @@
             mortalAttackRange: 2.5,
             qiRefiningRangeFactor: 7, 
             
-            uyApRangeFactor: 8, 
-            uyApDuration: 5, 
-            uyApSlowFactor: 3, 
+            // CHI PHÍ CỐ ĐỊNH CỦA KĨ NĂNG CÔNG PHÁP
+            SKILL_QI_COST: 1, 
+            
+            THUON_QUYEN_RANGE: 20, 
+            
+            VAN_KIEM_COUNT: 50, 
+            VAN_KIEM_RADIUS: 25, 
+            VAN_KIEM_ORBIT_HEIGHT: 30, 
+            
+            VAN_MA_TRAN_RADIUS: 30, 
+            VAN_MA_TRAN_DURATION: 5, 
+            VAN_MA_TRAN_HEAL_PER_ENEMY: 5, 
 
             enemyAttackRange: 5.0, 
             enemyBaseSpeed: 0.01,
             
             flyingSpeed: 0.1, 
             descentRateFactor: 0.05, 
+
+            playerFlightHeightImmunity: 5, 
+            maxEnemies: 50, 
         };
         SETTINGS.qiRefiningAttackRange = SETTINGS.mortalAttackRange * SETTINGS.qiRefiningRangeFactor;
-        SETTINGS.uyApRange = SETTINGS.mortalAttackRange * SETTINGS.uyApRangeFactor;
 
         const STATE = {
             hp: 100,
@@ -335,8 +355,7 @@
             realm: 'Mortal', 
             cultivationMethod: null, 
             isMeditating: false,
-            isAttacking: false,
-            isUyAping: false, 
+            isAttacking: false, // Dùng chung cho cả Tấn công cơ bản và Kĩ năng Công Pháp
             canMove: true,
             playerScale: 1, 
             defaultCamHeight: SETTINGS.camHeight,
@@ -349,8 +368,16 @@
             'Foundation': { name: 'Trúc Cơ Cảnh', nextQi: SETTINGS.qiToGoldenCore, color: '#FF4500', hp: 10, code: 'TC' },
             'GoldenCore': { name: 'Kim Đan Cảnh', nextQi: 9999, color: '#FFCC00', hp: 20, code: 'KĐ' }
         };
-        const ENEMY_REALMS = ['QiRefining', 'Foundation', 'GoldenCore'];
+        
         const METHOD_MAP = ['Thể Tu', 'Kiếm Tu', 'Huyết Tu'];
+
+        // Danh sách quái vật đơn giản
+        const ENEMY_SPECIES = [
+            { name: "Yêu Thú", realm: 'Mortal', color: 0x888888, scale: 0.8, isFlying: false, code: 'YT' },
+            { name: "Bạch Trạch", realm: 'QiRefining', color: 0xFFD700, scale: 1.2, isFlying: false, code: 'BTR' },
+            { name: "Thanh Long", realm: 'Foundation', color: 0x00FF00, scale: 2.0, isFlying: true, code: 'TLG' },
+        ];
+
 
         // --- VARIABLES ---
         let scene, camera, renderer, clock;
@@ -358,18 +385,25 @@
         let playerSword, flyingSwordPivot;
         let enemies = [];
         let slashEffect;
-        let birds = [];
+        let thounQuyenEffect; 
+        let thounQuyenAura; 
         let orbitingSwords = []; 
-        let uyApEffect; 
-        let uyApLightningLines = []; 
-        
+
+        let vanKiemMesh = null; 
+        let vanKiemData = []; 
+        let vanMaTranEffect = null; 
+
         let lastDamageTime = 0;
 
         // Inputs
-        const keys = { w: false, a: false, s: false, d: false, q: false, z: false, x: false }; 
+        const keys = { w: false, a: false, s: false, d: false, q: false, z: false, attack: false, skill: false }; 
         let joystickVec = { x: 0, y: 0, z: 0 }; 
-        let uyApEndTime = 0; 
         
+        // Cần cho InstancedMesh
+        const dummy = new THREE.Object3D();
+        const swordGeo = new THREE.BoxGeometry(0.08, 1.2, 0.05);
+        const swordMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, blending: THREE.AdditiveBlending });
+
         // --- UTILS ---
 
         function createTextTexture(text, color, size = 128) {
@@ -401,156 +435,120 @@
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.enabled = false; 
             document.getElementById('game-container').appendChild(renderer.domElement);
 
-            // Lighting
-            const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+            // Lighting (Ánh sáng cơ bản)
+            const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.9); 
             scene.add(hemi);
-            const dir = new THREE.DirectionalLight(0xffecd2, 1);
+            const dir = new THREE.DirectionalLight(0xffecd2, 1.2);
             dir.position.set(20, 50, 20);
-            dir.castShadow = true;
-            dir.shadow.mapSize.set(2048, 2048);
-            dir.shadow.camera.top = 50; dir.shadow.camera.bottom = -50;
-            dir.shadow.camera.left = -50; dir.shadow.camera.right = 50;
             scene.add(dir);
 
             createEnvironment();
             createPlayer();
-            createUyApEffect(); 
-            for(let i=0; i<60; i++) spawnEnemy();
-            createBirds();
+            
+            for(let i=0; i<SETTINGS.maxEnemies; i++) spawnEnemy(); 
 
             setupInputs();
-            setupUI();
+            updateUI();
+
+            const music = document.getElementById('background-music');
+            music.volume = 0.4; 
+            music.play().catch(error => {
+                document.addEventListener('click', function handler() {
+                    music.play().catch(e => console.log("Không thể phát nhạc sau tương tác: ", e));
+                    document.removeEventListener('click', handler);
+                });
+            });
 
             clock = new THREE.Clock();
             animate();
         }
 
         function createEnvironment() {
-            // Ground
             const ground = new THREE.Mesh(
                 new THREE.PlaneGeometry(300, 300),
                 new THREE.MeshStandardMaterial({ color: 0x3a5f2d, roughness: 0.9 })
             );
             ground.rotation.x = -Math.PI/2;
-            ground.receiveShadow = true;
             scene.add(ground);
 
-            // River
             const river = new THREE.Mesh(
                 new THREE.PlaneGeometry(150, 20),
                 new THREE.MeshStandardMaterial({ color: 0x4facfe, emissive: 0x001133, roughness: 0.1 })
             );
             river.rotation.x = -Math.PI/2;
-            river.position.set(0, 0.1, -30);
+            river.position.set(0, 0.05, -30); 
             scene.add(river);
 
-            // Rocks & Trees (omitted for brevity)
+            createTrees(20); 
+            createRocks(20);
         }
 
-        function createUyApEffect() {
-            // Uy Ap Visual: A transparent ring with a distorted gravity effect
-            const maxRadius = SETTINGS.uyApRange * 2; 
-            
-            // 1. Gravity Ring (Transparent, crushed effect)
-            const ringGeo = new THREE.RingGeometry(1, maxRadius, 64); 
-            ringGeo.rotateX(-Math.PI/2);
-            uyApEffect = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ 
-                color: 0x333333, 
-                transparent: true, 
-                opacity: 0.6, 
-                side: THREE.DoubleSide,
-                depthWrite: false
-            }));
-            uyApEffect.position.y = 0.02;
-            uyApEffect.visible = false;
-            scene.add(uyApEffect);
+        function createTrees(count) {
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.8 }); 
+            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.6 }); 
 
-            // 2. Lightning Lines (Yellow/Gold)
-            const lightningMat = new THREE.LineBasicMaterial({
-                color: 0xFFD700, 
-                linewidth: 3, 
-                transparent: true,
-                opacity: 0.9
-            });
+            for (let i = 0; i < count; i++) {
+                const treeGroup = new THREE.Group();
 
-            // Create 15 lightning lines
-            for(let i=0; i<15; i++) {
-                const points = [];
-                for(let j=0; j<20; j++) { 
-                    points.push(new THREE.Vector3()); 
+                const trunkHeight = 1 + Math.random() * 2;
+                const trunkRadius = 0.15 + Math.random() * 0.1;
+                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(trunkRadius, trunkRadius, trunkHeight, 8), trunkMat);
+                trunk.position.y = trunkHeight / 2;
+                treeGroup.add(trunk);
+
+                const leavesHeight = 1.5 + Math.random() * 2;
+                const leavesRadius = 1 + Math.random() * 0.5;
+                const leaves = new THREE.Mesh(new THREE.ConeGeometry(leavesRadius, leavesHeight, 16), leavesMat);
+                leaves.position.y = trunkHeight + leavesHeight / 2 - 0.2; 
+                treeGroup.add(leaves);
+
+                const ang = Math.random() * Math.PI * 2;
+                const rad = 20 + Math.random() * 100; 
+                treeGroup.position.set(Math.cos(ang) * rad, 0, Math.sin(ang) * rad);
+                
+                if (treeGroup.position.z > -45 && treeGroup.position.z < -15 && Math.abs(treeGroup.position.x) < 75) {
+                    continue; 
                 }
-                const lightningGeo = new THREE.BufferGeometry().setFromPoints(points);
-                const line = new THREE.LineSegments(lightningGeo, lightningMat); 
-                line.userData.UyApLightning = true;
-                line.visible = false;
-                uyApEffect.add(line); 
-                uyApLightningLines.push(line);
+
+                scene.add(treeGroup);
             }
         }
 
-        function updateUyApLightning(targetRadius, time) {
-            uyApEffect.visible = STATE.isUyAping;
-            if (!STATE.isUyAping) return;
-            
-            uyApEffect.position.copy(playerGroup.position);
-            
-            const radius = SETTINGS.uyApRange * STATE.playerScale; // Use SETTINGS.uyApRange here
+        function createRocks(count) {
+            const rockMat = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.9 }); 
+            const rockGeos = [
+                new THREE.DodecahedronGeometry(0.5 + Math.random()),
+            ];
 
-            uyApLightningLines.forEach((line, index) => {
-                const angle = (index / uyApLightningLines.length) * Math.PI * 2 + time * 0.5;
-                const points = line.geometry.attributes.position.array;
+            for (let i = 0; i < count; i++) {
+                const rock = new THREE.Mesh(rockGeos[0], rockMat);
+
+                const ang = Math.random() * Math.PI * 2;
+                const rad = 15 + Math.random() * 120; 
+                rock.position.set(Math.cos(ang) * rad, 0, Math.sin(ang) * rad);
                 
-                const heightRange = 0.5 * STATE.playerScale;
-                const radiusJitter = 0.05;
-                
-                for(let i = 0; i < 20; i++) { 
-                    const segmentStartRadius = radius * (0.9 + Math.random() * 0.1);
-                    const h = (i / 19) * heightRange; 
-                    const a = angle + (i % 2 === 0 ? 0.0 : 0.1); 
-
-                    const r = segmentStartRadius + (Math.random() - 0.5) * radiusJitter;
-                    
-                    points[i * 3 + 0] = Math.cos(a) * r; 
-                    points[i * 3 + 1] = h; 
-                    points[i * 3 + 2] = Math.sin(a) * r; 
+                if (rock.position.z > -45 && rock.position.z < -15 && Math.abs(rock.position.x) < 75) {
+                    continue; 
                 }
-                line.geometry.attributes.position.needsUpdate = true;
-                line.visible = true;
-            });
 
-             // Animate the size of the gravity ring
-            const scaleFactor = 0.1 + (radius / uyApEffect.geometry.parameters.outerRadius);
-            uyApEffect.scale.set(scaleFactor, scaleFactor, scaleFactor);
-            uyApEffect.material.opacity = 0.6 + Math.sin(time*10) * 0.1;
-
-            // Apply gravity/slow effect to enemies in range
-            enemies.forEach(e => {
-                if(!e.dead) {
-                    const d = playerGroup.position.distanceTo(e.mesh.position);
-                    if (d < radius) {
-                        e.isSlowed = true; 
-                    } else {
-                        e.isSlowed = false;
-                    }
-                } else {
-                    e.isSlowed = false;
-                }
-            });
+                rock.scale.setScalar(0.5 + Math.random() * 1.5); 
+                rock.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI); 
+                scene.add(rock);
+            }
         }
 
 
         function createPlayer() {
-            // ... (keep as is)
             playerGroup = new THREE.Group();
             
             const robeMat = new THREE.MeshStandardMaterial({ color: 0xf0f8ff });
             const skinMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
             
             playerBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, 0.7, 8), robeMat);
-            playerBody.position.y = 0.85; playerBody.castShadow = true;
+            playerBody.position.y = 0.85; 
             playerGroup.add(playerBody);
 
             const head = new THREE.Mesh(new THREE.SphereGeometry(0.25), skinMat);
@@ -558,95 +556,141 @@
 
             const legGeo = new THREE.BoxGeometry(0.18, 0.6, 0.2);
             const lLegPv = new THREE.Group(); lLegPv.position.set(0.15, -0.35, 0);
-            lLeg = new THREE.Mesh(legGeo, robeMat); lLeg.position.y = -0.3; lLeg.castShadow = true;
+            lLeg = new THREE.Mesh(legGeo, robeMat); lLeg.position.y = -0.3; 
             lLegPv.add(lLeg); playerBody.add(lLegPv);
 
             const rLegPv = new THREE.Group(); rLegPv.position.set(-0.15, -0.35, 0);
-            rLeg = new THREE.Mesh(legGeo, robeMat); rLeg.position.y = -0.3; rLeg.castShadow = true;
+            rLeg = new THREE.Mesh(legGeo, robeMat); rLeg.position.y = -0.3; 
             rLegPv.add(rLeg); playerBody.add(rLegPv);
 
             const armGeo = new THREE.BoxGeometry(0.15, 0.6, 0.15);
-            const lArm = new THREE.Mesh(armGeo, robeMat);
-            lArm.position.set(0.4, 0.1, 0); lArm.rotation.z = -0.1; lArm.castShadow = true;
-            playerBody.add(lArm);
-
             const rArmPv = new THREE.Group(); rArmPv.position.set(-0.4, 0.1, 0);
-            rArm = new THREE.Mesh(armGeo, robeMat); rArm.position.y = -0.2; rArm.castShadow = true;
+            rArm = new THREE.Mesh(armGeo, robeMat); rArm.position.y = -0.2; 
             rArmPv.add(rArm); playerBody.add(rArmPv);
 
-            const swordGeo = new THREE.BoxGeometry(0.08, 1.2, 0.05);
             const swordMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x00ffff, emissiveIntensity: 1 });
             playerSword = new THREE.Mesh(swordGeo, swordMat);
             
             playerSword.position.set(0, -0.4, 0.3);
             playerSword.rotation.x = Math.PI/2;
-            playerSword.castShadow = true;
             rArmPv.add(playerSword);
 
             const slashGeo = new THREE.RingGeometry(1, 2, 32, 1, Math.PI, Math.PI);
             slashEffect = new THREE.Mesh(slashGeo, new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0, side: THREE.DoubleSide }));
             slashEffect.visible = false;
             scene.add(slashEffect);
+            
+            // THỐN QUYỀN: Hình dạng Nắm Đấm (Box bo tròn cạnh)
+            const thounQuyenGeo = new THREE.BoxGeometry(0.7, 0.7, 1.0, 5, 5, 5); 
+            thounQuyenEffect = new THREE.Mesh(thounQuyenGeo, new THREE.MeshBasicMaterial({ 
+                color: 0xffd700, 
+                transparent: true, 
+                opacity: 0.9, 
+                blending: THREE.AdditiveBlending 
+            }));
+            thounQuyenEffect.visible = false;
+            thounQuyenEffect.position.set(1000, 1000, 1000); 
+            scene.add(thounQuyenEffect); 
+            
+            // Uy Áp (Aura)
+            const auraGeo = new THREE.SphereGeometry(1.0, 16, 16);
+            thounQuyenAura = new THREE.Mesh(auraGeo, new THREE.MeshBasicMaterial({
+                color: 0xff0000, 
+                transparent: true,
+                opacity: 0.3,
+                side: THREE.BackSide, 
+                blending: THREE.AdditiveBlending 
+            }));
+            thounQuyenAura.scale.set(1.5, 1.5, 1.5);
+            thounQuyenAura.visible = false;
+            thounQuyenEffect.add(thounQuyenAura); 
 
             playerGroup.position.y = 0; 
             scene.add(playerGroup);
 
             // Kiếm Tu Orbiting Swords setup 
-            const orbitSwordGeo = new THREE.BoxGeometry(0.05, 0.5, 0.03);
             const orbitSwordMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-            for(let i = 0; i < 10; i++) {
-                const sword = new THREE.Mesh(orbitSwordGeo, orbitSwordMat);
+            for(let i = 0; i < 5; i++) { 
+                const sword = new THREE.Mesh(swordGeo.clone(), orbitSwordMat);
                 sword.rotation.x = Math.PI/2;
                 sword.visible = false;
                 playerGroup.add(sword);
                 orbitingSwords.push(sword);
             }
-        }
-
-        function createBirds() {
-             // ... (keep as is)
-            const geo = new THREE.ConeGeometry(0.1, 0.4, 3);
-            geo.rotateX(Math.PI/2);
-            for(let i=0; i<10; i++) {
-                const b = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color: 0xffffff}));
-                b.position.set(0, 15 + Math.random()*5, 0);
-                b.userData = { r: 10+Math.random()*30, s: 0.5+Math.random(), a: Math.random()*10 };
-                scene.add(b);
-                birds.push(b);
-            }
+            
+            // Vạn Kiếm Quy Tông InstancedMesh
+            vanKiemMesh = new THREE.InstancedMesh(swordGeo.clone(), swordMat.clone(), SETTINGS.VAN_KIEM_COUNT);
+            vanKiemMesh.visible = false;
+            scene.add(vanKiemMesh);
         }
         
-        function spawnEnemy() {
-            // Assign random realm and get stats
-            const randomRealmName = ENEMY_REALMS[Math.floor(Math.random() * ENEMY_REALMS.length)];
-            const realmStats = REALM_MAP[randomRealmName];
-            
+        
+        function createEnemyBody(species, scaleFactor, colorHex) {
             const group = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: colorHex });
             
-            let colorHex;
-            if (randomRealmName === 'QiRefining') colorHex = 0x556B2F; // Dark Green
-            else if (randomRealmName === 'Foundation') colorHex = 0x8B0000; // Dark Red
-            else colorHex = 0x4B0082; // Dark Purple for Golden Core
-            
-            const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.8), new THREE.MeshStandardMaterial({color: colorHex}));
-            body.position.y = 0.5; body.castShadow = true;
-            group.add(body);
-            
-            const horn = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.3), new THREE.MeshStandardMaterial({color: 0xffffff}));
-            horn.position.set(0, 0.4, 0.3); body.add(horn);
+            if (species.isFlying) {
+                const body = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 8), bodyMat);
+                body.scale.set(1.5, 0.8, 1.0);
+                
+                const wingMat = new THREE.MeshStandardMaterial({ color: colorHex, opacity: 0.8, transparent: true, side: THREE.DoubleSide });
+                const wingGeo = new THREE.PlaneGeometry(2, 1);
+                
+                const wingL = new THREE.Mesh(wingGeo, wingMat);
+                wingL.position.set(1, 0, 0); wingL.rotation.y = Math.PI / 2; wingL.rotation.z = -0.5;
+                body.add(wingL);
+                
+                const wingR = new THREE.Mesh(wingGeo, wingMat);
+                wingR.position.set(-1, 0, 0); wingR.rotation.y = -Math.PI / 2; wingR.rotation.z = 0.5;
+                body.add(wingR);
+                
+                group.add(body);
+                group.userData.mainBody = body;
+                group.userData.wings = [wingL, wingR];
+                
+            } else {
+                const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 1.6), bodyMat);
+                body.position.y = 0.5; 
 
-            const lGeo = new THREE.BoxGeometry(0.1, 0.4, 0.1);
-            const legs = [];
-            [[-0.2,0.3], [0.2,0.3], [-0.2,-0.3], [0.2,-0.3]].forEach(pos => {
-                const l = new THREE.Mesh(lGeo, new THREE.MeshStandardMaterial({color: 0x222222}));
-                l.position.set(pos[0], -0.4, pos[1]);
-                body.add(l);
-                legs.push(l);
-            });
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.3), bodyMat);
+                head.position.z = 0.9;
+                head.position.y = 0.3;
+                body.add(head);
 
-            // --- Enemy Realm Text Display ---
-            const realmCode = realmStats.code;
-            const realmColor = realmStats.color;
+                const legMat = new THREE.MeshStandardMaterial({color: 0x222222});
+                const lGeo = new THREE.BoxGeometry(0.2, 1.0, 0.2);
+                const legs = [];
+                [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]].forEach(pos => {
+                    const l = new THREE.Mesh(lGeo, legMat);
+                    l.position.set(pos[0], -0.9, pos[1]);
+                    body.add(l);
+                    legs.push(l);
+                });
+                
+                group.add(body);
+                group.userData.mainBody = body;
+                group.userData.legs = legs;
+            }
+            
+            group.scale.set(scaleFactor * 0.5, scaleFactor * 0.5, scaleFactor * 0.5); 
+            return group;
+        }
+
+        function spawnEnemy() {
+            if (enemies.length >= SETTINGS.maxEnemies) return; 
+
+            const species = ENEMY_SPECIES[Math.floor(Math.random() * ENEMY_SPECIES.length)];
+            const randomRealmName = species.realm;
+            
+            const enemyGroup = createEnemyBody(species, species.scale, species.color);
+            const group = new THREE.Group();
+            group.add(enemyGroup);
+            
+            const scaleFactor = species.scale;
+
+            // Realm Text Display
+            const realmCode = species.code;
+            const realmColor = REALM_MAP[randomRealmName].color;
             const textTexture = createTextTexture(realmCode, realmColor, 128);
 
             const textPlane = new THREE.Mesh(
@@ -657,36 +701,44 @@
                     side: THREE.DoubleSide 
                 })
             );
-            textPlane.position.y = 1.3; 
-            textPlane.rotation.x = 0; // Will be rotated to face the camera in the loop
+            textPlane.position.y = 1.3 * scaleFactor; 
+            textPlane.rotation.x = 0; 
             group.add(textPlane);
 
-            const ang = Math.random() * Math.PI * 2;
-            const rad = 20 + Math.random() * 20;
-            group.position.set(Math.cos(ang)*rad, 0, Math.sin(ang)*rad);
+            // Vị trí Spawn
+            let ang = Math.random() * Math.PI * 2;
+            let rad = 20 + Math.random() * 20;
+            let yPos = species.isFlying ? 5 + Math.random() * 5 : 0; 
+            let xPos = Math.cos(ang)*rad;
+            let zPos = Math.sin(ang)*rad;
+            
+            group.position.set(xPos, yPos, zPos);
             
             scene.add(group);
             
             enemies.push({ 
                 mesh: group, 
-                body: body, 
-                textPlane: textPlane, // Store the text plane
+                body: enemyGroup.userData.mainBody, 
+                textPlane: textPlane, 
                 realm: randomRealmName,
-                defaultEmissive: colorHex, 
-                legs: legs, 
-                hp: realmStats.hp, 
-                maxHp: realmStats.hp,
+                species: species.name, 
+                isFlying: species.isFlying,
+                defaultEmissive: species.color, 
+                legs: enemyGroup.userData.legs || [], 
+                wings: enemyGroup.userData.wings || [],
+                hp: REALM_MAP[randomRealmName].hp * scaleFactor, 
+                maxHp: REALM_MAP[randomRealmName].hp * scaleFactor,
                 dead: false, 
                 timeOffset: Math.random()*10, 
-                isSlowed: false 
+                isSlowed: false,
+                slowFactor: 1, 
             });
         }
 
 
         // --- REALM UPGRADES / CÔNG PHÁP EFFECTS ---
-
+        
         function applyCultivationMethod(method) {
-            // ... (keep as is)
             STATE.cultivationMethod = method;
 
             // Reset all effects first
@@ -700,7 +752,7 @@
                 playerGroup.scale.set(3, 3, 3);
                 SETTINGS.camHeight = STATE.defaultCamHeight * STATE.playerScale * 0.5;
                 SETTINGS.camDist = STATE.defaultCamDist * STATE.playerScale * 0.5;
-                showNotify("Thể Tu: Thân thể to lớn gấp 3 lần!");
+                showNotify("Thể Tu: Thân thể to lớn gấp 3 lần! Mở khóa Thốn Quyền!");
             } else {
                 SETTINGS.camHeight = STATE.defaultCamHeight;
                 SETTINGS.camDist = STATE.defaultCamDist;
@@ -708,11 +760,11 @@
 
             if (method === 'Kiếm Tu') {
                 orbitingSwords.forEach(s => s.visible = true);
-                showNotify("Kiếm Tu: 10 thanh kiếm hộ thân!");
+                showNotify("Kiếm Tu: 5 thanh kiếm hộ thân! Mở khóa Vạn Kiếm Quy Tông!");
             }
 
             if (method === 'Huyết Tu') {
-                 showNotify("Huyết Tu: Tốc độ di chuyển tăng x6 lần!");
+                 showNotify("Huyết Tu: Tốc độ di chuyển tăng x6 lần! Mở khóa Vạn Ma Trận!");
             }
             
             if (playerGroup.position.y < 0.1 && !STATE.isMeditating) {
@@ -722,9 +774,8 @@
             
             updateUI();
         }
-        
+
         function checkAndUpgradeRealm(initialQi) {
-            // ... (keep as is)
             let currentRealm = STATE.realm;
             let currentQi = initialQi;
             let upgraded = false;
@@ -758,6 +809,7 @@
                     showNotify(`ĐỘT PHÁ! ${realmInfo.name}!`);
 
                     if (currentRealm === 'QiRefining') {
+                        // Kích hoạt Ngự Kiếm
                         playerSword.parent.remove(playerSword);
                         flyingSwordPivot = new THREE.Group();
                         flyingSwordPivot.position.copy(playerGroup.position);
@@ -766,11 +818,9 @@
                         playerSword.rotation.set(Math.PI/2, 0, 0); 
                         flyingSwordPivot.add(playerSword);
                     } else if (currentRealm === 'Foundation') {
+                        // Kích hoạt Bay
                         document.getElementById('fly-up-btn').style.display = 'flex'; 
                         document.getElementById('fly-down-btn').style.display = 'flex'; 
-                    } else if (currentRealm === 'GoldenCore') {
-                        document.getElementById('uy-ap-btn').style.display = 'flex';
-                        showNotify("Kỹ năng Uy Áp đã được khai mở!");
                     }
                     upgraded = true;
                 } else {
@@ -791,7 +841,7 @@
                 STATE.qi += SETTINGS.qiPerStone;
                 checkAndUpgradeRealm(STATE.qi);
                 showNotify(`Hấp thụ: +${SETTINGS.qiPerStone} Linh Khí`);
-                document.getElementById('modal-stone-count').innerText = STATE.stones; // Update modal
+                document.getElementById('modal-stone-count').innerText = STATE.stones; 
                 updateUI();
             } else {
                 showNotify("Không có Linh Thạch!");
@@ -814,39 +864,56 @@
             checkAndUpgradeRealm(finalQi);
             
             showNotify(`Hấp thụ Toàn bộ: +${totalQiGain} Linh Khí (${stonesUsed} Linh Thạch)`);
-            document.getElementById('modal-stone-count').innerText = STATE.stones; // Update modal
+            document.getElementById('modal-stone-count').innerText = STATE.stones; 
             closeStorageRing();
         }
 
         // --- GAMEPLAY FUNCTIONS ---
 
         function takeDamage(amount) {
-            STATE.hp = Math.max(0, STATE.hp - amount);
+            STATE.hp = Math.min(100, Math.max(0, STATE.hp - amount));
             document.getElementById('hp-val').innerText = STATE.hp;
-            // TODO: Add visual hit effect on player
+            if (STATE.hp <= 0) {
+                 showNotify("Bạn đã bị trọng thương, hồi sinh sau 5s...");
+                 STATE.canMove = false;
+                 STATE.isAttacking = true;
+                 setTimeout(() => {
+                    STATE.hp = 100;
+                    STATE.canMove = true;
+                    STATE.isAttacking = false;
+                    updateUI();
+                 }, 5000);
+            }
+        }
+        
+        function healHP(amount) {
+             STATE.hp = Math.min(100, STATE.hp + amount);
+             document.getElementById('hp-val').innerText = STATE.hp;
         }
 
         function enemyAttack(enemy) {
             const currentTime = clock.elapsedTime;
             if (currentTime - lastDamageTime < 1) return; 
 
+            // Miễn nhiễm nếu bay quá cao
+            if (!enemy.isFlying && playerGroup.position.y > SETTINGS.playerFlightHeightImmunity) {
+                 return;
+            }
+            
             let damage = 1; 
             if (enemy.realm === 'Foundation') damage = 3;
             if (enemy.realm === 'GoldenCore') damage = 5;
 
             takeDamage(damage);
             lastDamageTime = currentTime;
-            showNotify(`Bị ${REALM_MAP[enemy.realm].name} tấn công (-${damage} HP)!`);
         }
 
-        // ** Đã sửa lỗi không tắt được nút Ngồi Thiền **
         function toggleMeditation() {
-             if(STATE.isAttacking || STATE.isUyAping) return;
+             if(STATE.isAttacking) return;
              
              // Xử lý logic tắt
              if (STATE.isMeditating) {
                  STATE.isMeditating = false;
-                 // Đặt lại tư thế và trạng thái di chuyển
                  lLeg.rotation.set(0,0,0); lLeg.position.y = -0.3;
                  rLeg.rotation.set(0,0,0); rLeg.position.y = -0.3;
                  playerBody.position.y = 0.85; 
@@ -869,32 +936,9 @@
                  STATE.canMove = false;
                  document.getElementById('meditate-btn').style.filter = "brightness(1.5)";
              }
-             // Luôn gọi updateUI để cập nhật trạng thái các nút
              updateUI(); 
         }
         
-        function toggleUyAp() {
-             // ... (keep as is)
-             if (STATE.realm !== 'GoldenCore' || STATE.isMeditating || STATE.isAttacking) return;
-
-             if (!STATE.isUyAping) {
-                STATE.isUyAping = true;
-                uyApEndTime = clock.elapsedTime + SETTINGS.uyApDuration;
-                document.getElementById('uy-ap-btn').style.filter = "brightness(2.0)";
-                showNotify(`Uy Áp (Trọng Lực x${SETTINGS.uyApSlowFactor}) đã kích hoạt!`);
-                STATE.canMove = false;
-             } else {
-                STATE.isUyAping = false;
-                uyApEndTime = 0;
-                document.getElementById('uy-ap-btn').style.filter = "none";
-                showNotify("Uy Áp đã đóng.");
-                STATE.canMove = true;
-                enemies.forEach(e => e.isSlowed = false); 
-             }
-             updateUI(); // Cần cập nhật UI khi Uy Áp thay đổi
-        }
-        
-
         function openStorageRing() {
             document.getElementById('modal-stone-count').innerText = STATE.stones;
             document.getElementById('storage-ring-modal').style.display = 'block';
@@ -903,10 +947,16 @@
         function closeStorageRing() {
             document.getElementById('storage-ring-modal').style.display = 'none';
         }
+        
+        function getDirectionVector(mesh) {
+            const matrix = new THREE.Matrix4();
+            matrix.extractRotation(mesh.matrix);
+            return new THREE.Vector3(0, 0, -1).applyMatrix4(matrix); 
+        }
 
+        // --- TẤN CÔNG CƠ BẢN (KHÔNG TỐN LINH KHÍ) ---
         function performAttack() {
-            // ... (keep as is)
-            if(STATE.isMeditating || STATE.isAttacking || STATE.isUyAping) return;
+            if(STATE.isMeditating || STATE.isAttacking) return;
             STATE.isAttacking = true;
 
             const range = STATE.realm === 'Mortal' ? SETTINGS.mortalAttackRange : SETTINGS.qiRefiningAttackRange;
@@ -919,13 +969,13 @@
                     rArm.rotation.x = -Math.PI/2 + Math.sin(t) * 2;
                     
                     if(t > 0.5 && t < 1.0) {
-                         slashEffect.visible = true;
-                         slashEffect.position.copy(playerGroup.position);
-                         slashEffect.position.y = playerGroup.position.y + (1 * STATE.playerScale);
-                         slashEffect.rotation.x = -Math.PI/2;
-                         slashEffect.rotation.z = playerGroup.rotation.y - Math.PI/2;
-                         slashEffect.material.opacity = 1 - (t-0.5)*2;
-                         checkHits(SETTINGS.mortalAttackRange);
+                        slashEffect.visible = true;
+                        slashEffect.position.copy(playerGroup.position);
+                        slashEffect.position.y = playerGroup.position.y + (1 * STATE.playerScale);
+                        slashEffect.rotation.x = -Math.PI/2;
+                        slashEffect.rotation.z = playerGroup.rotation.y - Math.PI/2;
+                        slashEffect.material.opacity = 1 - (t-0.5)*2;
+                        checkHits(SETTINGS.mortalAttackRange);
                     }
 
                     if(t > Math.PI) {
@@ -936,6 +986,7 @@
                     }
                 }, 30);
             } else {
+                // Ngự Kiếm
                 if(nearestEnemy) {
                     let t = 0;
                     const anim = setInterval(() => {
@@ -959,16 +1010,341 @@
                     showNotify("Không có mục tiêu trong phạm vi Ngự Kiếm!");
                 }
             }
+            updateUI(); 
         }
 
+        // --- KĨ NĂNG CÔNG PHÁP (TỐN 1 LINH KHÍ) ---
+        function performSkill() {
+            if(STATE.isMeditating || STATE.isAttacking || !STATE.cultivationMethod) return;
+            
+            if (STATE.qi < SETTINGS.SKILL_QI_COST) {
+                 showNotify(`Không đủ Linh Khí (Cần ${SETTINGS.SKILL_QI_COST})!`);
+                 return;
+            }
+            
+            STATE.qi -= SETTINGS.SKILL_QI_COST;
+            STATE.isAttacking = true;
+            updateUI();
+
+            if (STATE.cultivationMethod === 'Thể Tu') {
+                performThuonQuyen();
+            } else if (STATE.cultivationMethod === 'Kiếm Tu') {
+                performVanKiem();
+            } else if (STATE.cultivationMethod === 'Huyết Tu') {
+                performVanMaTran();
+            }
+        }
+        
+        function performThuonQuyen() {
+            const effectiveRange = SETTINGS.THUON_QUYEN_RANGE * STATE.playerScale;
+            const forwardVector = getDirectionVector(playerGroup);
+            const startPos = playerGroup.position.clone().add(forwardVector.clone().multiplyScalar(1 * STATE.playerScale));
+            const endPos = playerGroup.position.clone().add(forwardVector.clone().multiplyScalar(effectiveRange));
+
+            thounQuyenEffect.position.copy(startPos);
+            thounQuyenEffect.visible = true;
+            thounQuyenEffect.scale.set(0.5 * STATE.playerScale, 0.5 * STATE.playerScale, 0.7 * STATE.playerScale); 
+            thounQuyenAura.visible = true;
+            
+            let t = 0;
+            const animDuration = 0.5; 
+            
+            const anim = setInterval(() => {
+                t += 0.05; 
+
+                if (t <= animDuration) {
+                    const progress = t / animDuration;
+                    thounQuyenEffect.position.lerpVectors(startPos, endPos, progress);
+                    
+                    // Hiệu ứng "nén"
+                    thounQuyenEffect.scale.z = 0.7 * STATE.playerScale + Math.sin(progress*Math.PI)*0.5 * STATE.playerScale; 
+                    thounQuyenEffect.material.opacity = 0.9;
+                    thounQuyenAura.material.opacity = 0.3 + Math.sin(progress*Math.PI)*0.3; 
+                    
+                } else if (t <= animDuration + 0.2) {
+                    if (t - 0.05 <= animDuration) { 
+                         const hitCount = applyThuonQuyenHit(effectiveRange, forwardVector);
+                         showNotify(`💥 THỐN QUYỀN! Tiêu diệt ${hitCount} sinh vật!`);
+                    }
+                    
+                    // Hiệu ứng nổ (mở rộng nhanh và tan biến)
+                    const explodeProgress = (t - animDuration) / 0.2;
+                    thounQuyenEffect.scale.setScalar(STATE.playerScale * (2 + explodeProgress * 5)); 
+                    thounQuyenEffect.material.opacity = 0.9 * (1 - explodeProgress);
+                    thounQuyenAura.material.opacity = 0.5 * (1 - explodeProgress); 
+
+                } else {
+                    clearInterval(anim);
+                    thounQuyenEffect.visible = false;
+                    thounQuyenAura.visible = false;
+                    STATE.isAttacking = false;
+                    thounQuyenEffect.scale.set(1, 1, 1);
+                    thounQuyenEffect.position.set(1000, 1000, 1000); 
+                }
+            }, 30);
+        }
+        
+        function applyThuonQuyenHit(range, forwardVector) {
+            let killCount = 0;
+            const playerPos = playerGroup.position.clone();
+
+            enemies.forEach(e => {
+                if(e.dead) return;
+
+                const enemyPos = e.mesh.position.clone();
+                const diff = enemyPos.clone().sub(playerPos);
+                const distance = diff.length();
+                
+                if (distance > range) return;
+                
+                diff.normalize();
+                const dotProduct = diff.dot(forwardVector);
+
+                if (dotProduct > 0.707) { 
+                    e.dead = true;
+                    e.mesh.visible = false;
+                    
+                    e.body.material.color.setHex(0x333333); 
+                    e.body.material.emissive.setHex(0x000000);
+
+                    STATE.stones++;
+                    killCount++;
+                    
+                    // Respawn
+                    setTimeout(() => {
+                        e.mesh.parent.remove(e.mesh); 
+                        enemies = enemies.filter(item => item !== e); 
+                        spawnEnemy(); 
+                    }, SETTINGS.respawnTime);
+                }
+            });
+            updateUI(); 
+            return killCount;
+        }
+
+        // --- NEW SKILL: Vạn Kiếm Quy Tông (Kiếm Tu) - Tối Ưu Hóa InstancedMesh ---
+        function performVanKiem() {
+            const targetPos = playerGroup.position.clone();
+            const radius = SETTINGS.VAN_KIEM_RADIUS;
+            const count = SETTINGS.VAN_KIEM_COUNT;
+            
+            vanKiemData = [];
+            vanKiemMesh.visible = true;
+
+            showNotify("✨ VẠN KIẾM QUY TÔNG! ✨");
+
+            // Giai đoạn 1: Triệu hồi kiếm trên trời
+            for (let i = 0; i < count; i++) {
+                const ang = Math.random() * Math.PI * 2;
+                const r = Math.random() * radius;
+                
+                const startPosition = new THREE.Vector3(
+                    targetPos.x + Math.cos(ang) * r,
+                    targetPos.y + SETTINGS.VAN_KIEM_ORBIT_HEIGHT, 
+                    targetPos.z + Math.sin(ang) * r
+                );
+                
+                const endPosition = new THREE.Vector3(
+                    targetPos.x + Math.cos(ang) * r * 0.5, 
+                    targetPos.y, 
+                    targetPos.z + Math.sin(ang) * r * 0.5
+                );
+                
+                vanKiemData.push({
+                    startPos: startPosition,
+                    endPos: endPosition,
+                    currentPos: startPosition.clone(),
+                    rotationZ: Math.random() * Math.PI * 2,
+                    progress: 0,
+                    isActive: true,
+                });
+            }
+            
+            let t = 0;
+            const fallDuration = 1.0; 
+            let killCount = 0;
+            let hasHit = false;
+
+            const updateVanKiem = () => {
+                t += 0.05;
+                const progress = Math.min(1, t / fallDuration);
+                let allFinished = true;
+
+                for (let i = 0; i < count; i++) {
+                    const data = vanKiemData[i];
+                    if (!data.isActive) continue;
+                    
+                    allFinished = false;
+
+                    // Interpolate position
+                    data.currentPos.lerpVectors(data.startPos, data.endPos, progress);
+                    data.rotationZ += 0.3; // Rotate while falling
+
+                    dummy.position.copy(data.currentPos);
+                    dummy.rotation.set(Math.PI / 2 + Math.PI, data.rotationZ, 0); // Đứng thẳng và xoay
+                    dummy.updateMatrix();
+                    vanKiemMesh.setMatrixAt(i, dummy.matrix);
+                }
+                
+                vanKiemMesh.instanceMatrix.needsUpdate = true;
+
+                if (progress >= 1 && !hasHit) {
+                    hasHit = true; 
+                    
+                    // Giai đoạn 2: Hit Check (tức thời)
+                    enemies.forEach(e => {
+                        if (e.dead) return;
+                        const distToPlayer = playerGroup.position.distanceTo(e.mesh.position);
+                        
+                        if (distToPlayer < radius) {
+                             e.dead = true;
+                             e.mesh.visible = false;
+                             e.body.material.color.setHex(0x333333); 
+                             STATE.stones++;
+                             killCount++;
+                             
+                             setTimeout(() => {
+                                e.mesh.parent.remove(e.mesh); 
+                                enemies = enemies.filter(item => item !== e); 
+                                spawnEnemy(); 
+                             }, SETTINGS.respawnTime);
+                        }
+                    });
+                    
+                    showNotify(`⚡ VẠN KIẾM: Tiêu diệt ${killCount} sinh vật!`);
+                    
+                    // Bắt đầu giai đoạn 3: Dọn dẹp hiệu ứng (Fade out)
+                    setTimeout(cleanupVanKiem, 500);
+                    return; // Ngừng gọi requestAnimationFrame trong hàm này
+                } else if (progress < 1) {
+                    requestAnimationFrame(updateVanKiem);
+                }
+            };
+            
+            const cleanupVanKiem = () => {
+                let fadeT = 0;
+                const fadeDuration = 0.5;
+                
+                const fadeAnim = setInterval(() => {
+                    fadeT += 0.1;
+                    const fadeProgress = fadeT / fadeDuration;
+                    
+                    vanKiemMesh.material.opacity = 1 - fadeProgress;
+
+                    if (fadeT >= fadeDuration) {
+                        clearInterval(fadeAnim);
+                        // QUAN TRỌNG: Ẩn InstancedMesh
+                        vanKiemMesh.visible = false;
+                        vanKiemMesh.material.opacity = 1.0; 
+                        
+                        // Đặt tất cả kiếm ra xa để không vẽ chúng nữa
+                         dummy.position.set(10000, 10000, 10000); 
+                         dummy.updateMatrix();
+                         for(let i=0; i<count; i++) vanKiemMesh.setMatrixAt(i, dummy.matrix);
+                         vanKiemMesh.instanceMatrix.needsUpdate = true;
+
+                        STATE.isAttacking = false;
+                        updateUI();
+                    }
+                }, 50);
+            }
+            
+            updateVanKiem();
+        }
+        
+        // --- NEW SKILL: Vạn Ma Trận (Huyết Tu) ---
+        function performVanMaTran() {
+            const radius = SETTINGS.VAN_MA_TRAN_RADIUS;
+            const duration = SETTINGS.VAN_MA_TRAN_DURATION * 1000;
+            const targetPos = playerGroup.position.clone();
+            let totalHeal = 0;
+            let killCount = 0;
+
+            if (vanMaTranEffect) {
+                // Đảm bảo ma trận cũ được gỡ bỏ an toàn
+                scene.remove(vanMaTranEffect);
+                if (vanMaTranEffect.geometry) vanMaTranEffect.geometry.dispose();
+                if (vanMaTranEffect.material) vanMaTranEffect.material.dispose();
+                vanMaTranEffect = null;
+            }
+
+            // Tạo Vùng Huyết Vực (Huyết Trận) - Đơn giản hóa để giảm tải
+            const matrixGeo = new THREE.CylinderGeometry(radius, radius, 0.1, 32); // Giảm phân đoạn
+            const matrixMat = new THREE.MeshBasicMaterial({ // Dùng BasicMaterial để nhẹ hơn
+                color: 0x8b0000, 
+                transparent: true,
+                opacity: 0.7,
+                blending: THREE.AdditiveBlending,
+                side: THREE.DoubleSide
+            });
+            vanMaTranEffect = new THREE.Mesh(matrixGeo, matrixMat);
+            vanMaTranEffect.position.set(targetPos.x, targetPos.y + 0.05, targetPos.z);
+            scene.add(vanMaTranEffect);
+            
+            showNotify("🩸 VẠN MA TRẬN được kích hoạt! 🩸");
+
+            // Logic sát thương/hồi máu tức thời
+            enemies.forEach(e => {
+                if (e.dead) return;
+                const distToPlayer = playerGroup.position.distanceTo(e.mesh.position);
+                
+                if (distToPlayer < radius) {
+                    e.dead = true;
+                    e.mesh.visible = false;
+                    e.body.material.color.setHex(0x000000); 
+                    
+                    totalHeal += SETTINGS.VAN_MA_TRAN_HEAL_PER_ENEMY;
+                    STATE.stones++;
+                    killCount++;
+                    
+                    setTimeout(() => {
+                        e.mesh.parent.remove(e.mesh); 
+                        enemies = enemies.filter(item => item !== e); 
+                        spawnEnemy(); 
+                    }, SETTINGS.respawnTime);
+                }
+            });
+            
+            healHP(totalHeal);
+            showNotify(`🔥 HÚT MÁU: Tiêu diệt ${killCount} sinh vật, hồi +${totalHeal} HP!`);
+
+            // Kết thúc và dọn dẹp Ma Trận
+            setTimeout(() => {
+                let fadeT = 0;
+                const fadeDuration = 1.0;
+                const fadeAnim = setInterval(() => {
+                    fadeT += 0.1;
+                    const fadeProgress = fadeT / fadeDuration;
+
+                    if (vanMaTranEffect && vanMaTranEffect.material) {
+                         vanMaTranEffect.material.opacity = 0.7 * (1 - fadeProgress);
+                    }
+                    
+                    if (fadeT >= fadeDuration) {
+                        clearInterval(fadeAnim);
+                        if (vanMaTranEffect) {
+                            // QUAN TRỌNG: Giải phóng tài nguyên
+                            if (vanMaTranEffect.geometry) vanMaTranEffect.geometry.dispose();
+                            if (vanMaTranEffect.material) vanMaTranEffect.material.dispose();
+                            scene.remove(vanMaTranEffect);
+                            vanMaTranEffect = null;
+                        }
+                        STATE.isAttacking = false;
+                        updateUI();
+                    }
+                }, 50);
+            }, duration);
+        }
+
+
         function findNearestEnemyInRange(range) {
-             // ... (keep as is)
             let close = null;
             let minD = range + 1;
+            
             enemies.forEach(e => {
                 if(!e.dead) {
                     const d = playerGroup.position.distanceTo(e.mesh.position);
-                    if(d < range * STATE.playerScale && d < minD) { 
+                    if(d < range * STATE.playerScale * e.mesh.scale.x && d < minD) { 
                         minD = d; 
                         close = e; 
                     }
@@ -979,12 +1355,13 @@
 
 
         function checkHits(range) {
-             // ... (keep as is)
             const checkPos = (STATE.realm === 'Mortal') ? playerGroup.position : flyingSwordPivot.position;
             
             enemies.forEach(e => {
                 if(e.dead) return;
-                if(checkPos.distanceTo(e.mesh.position) < range * STATE.playerScale) { 
+                
+                const d = checkPos.distanceTo(e.mesh.position);
+                if(d < range * STATE.playerScale * e.mesh.scale.x) { 
                     
                     let damage = 1; 
                     if (STATE.realm === 'QiRefining') damage = 3;
@@ -993,7 +1370,7 @@
                     
                     e.hp -= damage;
                     e.body.material.emissive.setHex(0xffffff);
-                    setTimeout(() => e.body.material.emissive.setHex(0x000000), 100);
+                    setTimeout(() => e.body.material.emissive.setHex(e.defaultEmissive), 100);
 
                     if(e.hp <= 0) {
                         e.dead = true;
@@ -1001,40 +1378,20 @@
                         
                         // Drop Item
                         STATE.stones++;
-                        showNotify("Nhặt được 1 Linh Thạch!");
                         
-                        // Drop Công Pháp
+                        // Drop Công Pháp (Giữ lại tính năng này)
                         if (!STATE.cultivationMethod) {
                             const newMethod = METHOD_MAP[Math.floor(Math.random() * METHOD_MAP.length)];
                             applyCultivationMethod(newMethod);
-                            showNotify(`Nhặt được Công Pháp: [${STATE.cultivationMethod}]!`);
                         }
                         
                         updateUI();
 
                         // Respawn
                         setTimeout(() => {
-                            const ang = Math.random()*6.28;
-                            const rad = 20 + Math.random()*10;
-                            e.mesh.position.set(playerGroup.position.x + Math.cos(ang)*rad, 0, playerGroup.position.z + Math.sin(ang)*rad);
-                            e.mesh.visible = true;
-                            e.dead = false;
-                            
-                            // Re-assign random realm on respawn
-                            const randomRealmName = ENEMY_REALMS[Math.floor(Math.random() * ENEMY_REALMS.length)];
-                            const realmStats = REALM_MAP[randomRealmName];
-                            e.realm = randomRealmName;
-                            e.hp = realmStats.hp;
-                            e.maxHp = realmStats.hp;
-                            
-                            // Recreate and update the text plane
-                            const newTextTexture = createTextTexture(realmStats.code, realmStats.color, 128);
-                            e.textPlane.material.map.dispose(); 
-                            e.textPlane.material.map = newTextTexture;
-                            e.textPlane.material.needsUpdate = true;
-
-                            e.isSlowed = false; 
-                            e.body.material.emissive.setHex(e.defaultEmissive); 
+                            e.mesh.parent.remove(e.mesh); 
+                            enemies = enemies.filter(item => item !== e); 
+                            spawnEnemy(); 
                         }, SETTINGS.respawnTime);
                     }
                 }
@@ -1048,8 +1405,7 @@
             const currentTime = clock.elapsedTime;
 
             if (STATE.hp <= 0) {
-                showNotify("Bạn đã bị trọng thương và ngất đi! Game Over.");
-                return; 
+                 return; 
             }
 
             // 1. Meditation Logic
@@ -1058,26 +1414,13 @@
                 checkAndUpgradeRealm(STATE.qi);
             }
             
-            // 2. Uy Ap Logic
-            if (STATE.isUyAping) {
-                updateUyApLightning(SETTINGS.uyApRange, currentTime);
-                if (currentTime > uyApEndTime) {
-                    toggleUyAp(); 
-                    return; 
-                }
-            } else {
-                uyApEffect.visible = false;
-                uyApLightningLines.forEach(c => c.visible = false);
-            }
-
-
-            // 3. Công Pháp: Kiếm Tu Orbiting
+            // 2. Công Pháp: Kiếm Tu Orbiting
             if (STATE.cultivationMethod === 'Kiếm Tu') {
                 const radius = 1.5 * STATE.playerScale;
                 const speed = 5;
                 const baseAngle = currentTime * speed;
                 orbitingSwords.forEach((sword, i) => {
-                    const angle = baseAngle + (i / 10) * Math.PI * 2;
+                    const angle = baseAngle + (i / 5) * Math.PI * 2; 
                     sword.position.x = Math.cos(angle) * radius;
                     sword.position.z = Math.sin(angle) * radius;
                     sword.rotation.y = -angle + Math.PI/2;
@@ -1085,14 +1428,13 @@
                 });
             }
 
-            // 4. Movement (Horizontal & Vertical)
+            // 3. Movement (Horizontal & Vertical)
             let mx = 0, mz = 0;
             if(STATE.canMove) {
                 if(keys.w) mz -= 1; if(keys.s) mz += 1;
                 if(keys.a) mx -= 1; if(keys.d) mx += 1;
                 
                 if(joystickVec.x || joystickVec.y) { 
-                    // Ưu tiên joystick trên PC
                     if (window.innerWidth < 1024) { 
                         mx = joystickVec.x; mz = joystickVec.y; 
                     }
@@ -1117,8 +1459,8 @@
                 
                 let verticalStep = 0;
                 if ((STATE.realm === 'Foundation' || STATE.realm === 'GoldenCore')) {
-                    if (keys.q || joystickVec.z > 0.1) verticalStep = SETTINGS.flyingSpeed;
-                    else if (keys.z || joystickVec.z < -0.1) verticalStep = -SETTINGS.flyingSpeed;
+                    if (keys.q) verticalStep = SETTINGS.flyingSpeed;
+                    else if (keys.z) verticalStep = -SETTINGS.flyingSpeed;
                     
                     if (verticalStep) {
                         playerGroup.position.y += verticalStep;
@@ -1140,7 +1482,7 @@
             }
 
 
-            // 5. Camera Follow
+            // 4. Camera Follow
             const camHeight = SETTINGS.camHeight * STATE.playerScale;
             const camDist = SETTINGS.camDist * STATE.playerScale;
 
@@ -1152,15 +1494,17 @@
             camera.position.lerp(targetPos, 0.1);
             camera.lookAt(playerGroup.position);
 
-            // 6. Flying Sword Idle
+            // 5. Flying Sword Idle
             if((STATE.realm !== 'Mortal') && !STATE.isAttacking) {
-                flyingSwordPivot.position.copy(playerGroup.position);
-                flyingSwordPivot.position.y = playerGroup.position.y;
-                playerSword.position.y = 1.5 + Math.sin(currentTime * 2) * 0.3 * STATE.playerScale;
-                playerSword.rotation.z = Math.sin(currentTime) * 0.1;
+                if (flyingSwordPivot) {
+                    flyingSwordPivot.position.copy(playerGroup.position);
+                    flyingSwordPivot.position.y = playerGroup.position.y;
+                    playerSword.position.y = 1.5 + Math.sin(currentTime * 2) * 0.3 * STATE.playerScale;
+                    playerSword.rotation.z = Math.sin(currentTime) * 0.1;
+                }
             }
             
-            // 7. Enemies AI and Damage Check
+            // 6. Enemies AI and Damage Check
             enemies.forEach(e => {
                 if(!e.dead) {
                     // Make text face camera
@@ -1171,18 +1515,37 @@
 
                     e.mesh.lookAt(playerGroup.position);
                     
-                    const moveFactor = e.isSlowed ? (1 / SETTINGS.uyApSlowFactor) : 1; 
+                    const moveFactor = 1; 
                     
-                    const wt = currentTime * 10 * moveFactor + e.timeOffset;
-                    e.legs.forEach((l, i) => l.rotation.x = Math.sin(wt + i)*0.5);
+                    // Animation cánh (Thú bay)
+                    if (e.isFlying) {
+                        const wingAngle = Math.sin(currentTime * 15 * moveFactor) * 0.5;
+                        e.wings[0].rotation.z = -0.5 + wingAngle; 
+                        e.wings[1].rotation.z = 0.5 - wingAngle; 
+                    }
+                    
+                    // Thú bay di chuyển trên không
+                    let targetY = e.isFlying ? playerGroup.position.y + 10 : 0;
+                    if(e.isFlying) {
+                        e.mesh.position.y += (targetY - e.mesh.position.y) * 0.005 * moveFactor;
+                    } else {
+                        e.mesh.position.y = 0;
+                    }
+                    
+                    // Animation Chân (Chỉ cho thú mặt đất)
+                    if (!e.isFlying && e.legs.length > 0) {
+                        const wt = currentTime * 10 * moveFactor + e.timeOffset;
+                        e.legs.forEach((l, i) => l.rotation.x = Math.sin(wt + i)*0.5);
+                    }
                     
                     const distToPlayer = playerGroup.position.distanceTo(e.mesh.position);
                     
+                    // Kiểm tra và di chuyển/tấn công
                     if (distToPlayer > SETTINGS.enemyAttackRange) {
                          e.mesh.translateZ(SETTINGS.enemyBaseSpeed * moveFactor); 
-                         e.body.material.emissive.setHex(e.defaultEmissive);
+                         e.body.material.emissive.setHex(0x000000); 
                     } else {
-                         enemyAttack(e);
+                         enemyAttack(e); 
                          e.body.material.emissive.setHex(0xFF0000); 
                     }
                 }
@@ -1192,7 +1555,6 @@
         }
 
         // --- UI & EVENTS ---
-        // ** Đã sửa lỗi hiển thị nút Ngồi Thiền và Uy Áp **
         function updateUI() {
             const currentRealmInfo = REALM_MAP[STATE.realm];
             const nextQi = currentRealmInfo.nextQi;
@@ -1205,34 +1567,26 @@
             document.getElementById('realm-badge').innerText = currentRealmInfo.name;
             document.getElementById('realm-badge').style.background = `linear-gradient(45deg, ${currentRealmInfo.color}, ${currentRealmInfo.color})`;
             
+            let skillName = "";
+            if (STATE.cultivationMethod === 'Thể Tu') skillName = `Thốn Quyền (-${SETTINGS.SKILL_QI_COST} Qi)`;
+            else if (STATE.cultivationMethod === 'Kiếm Tu') skillName = `Vạn Kiếm Quy Tông (-${SETTINGS.SKILL_QI_COST} Qi)`;
+            else if (STATE.cultivationMethod === 'Huyết Tu') skillName = `Vạn Ma Trận (-${SETTINGS.SKILL_QI_COST} Qi)`;
+            
+            // Cập nhật hiển thị nút Kĩ Năng
+            const skillBtn = document.getElementById('skill-btn');
             if (STATE.cultivationMethod) {
-                document.getElementById('cong-phap-display').innerText = `Công Pháp: ${STATE.cultivationMethod}`;
+                 skillBtn.style.display = 'flex';
+                 document.getElementById('cong-phap-display').innerText = `Công Pháp: ${STATE.cultivationMethod} (${skillName})`;
             } else {
-                document.getElementById('cong-phap-display').innerText = `Công Pháp: Chưa có`;
+                 skillBtn.style.display = 'none';
+                 document.getElementById('cong-phap-display').innerText = `Công Pháp: Chưa có`;
             }
             
             const isFlyingRealm = STATE.realm === 'Foundation' || STATE.realm === 'GoldenCore';
-            const isGoldenCore = STATE.realm === 'GoldenCore';
             
-            // 1. Nút Ngồi Thiền: Luôn hiển thị trừ khi đang ở chế độ Uy Áp
-            if (STATE.isUyAping) {
-                document.getElementById('meditate-btn').style.display = 'none';
-            } else {
-                document.getElementById('meditate-btn').style.display = 'flex';
-                document.getElementById('meditate-btn').style.filter = STATE.isMeditating ? "brightness(1.5)" : "none";
-            }
+            document.getElementById('meditate-btn').style.filter = STATE.isMeditating ? "brightness(1.5)" : "none";
             
-            // 2. Nút Uy Áp: Chỉ hiển thị khi là Kim Đan Cảnh VÀ không đang Ngồi Thiền
-            if (isGoldenCore && !STATE.isMeditating) {
-                document.getElementById('uy-ap-btn').style.display = 'flex';
-                document.getElementById('uy-ap-btn').style.filter = STATE.isUyAping ? "brightness(2.0)" : "none";
-            } else {
-                document.getElementById('uy-ap-btn').style.display = 'none';
-            }
-
-            // 3. Nút Bay (Chỉ hiển thị khi đủ cảnh giới VÀ không đang ở bất kỳ chế độ control nào)
-            const isControlMode = STATE.isMeditating || STATE.isUyAping;
-            if (isFlyingRealm && !isControlMode) {
+            if (isFlyingRealm && !STATE.isMeditating) {
                 document.getElementById('fly-up-btn').style.display = 'flex';
                 document.getElementById('fly-down-btn').style.display = 'flex';
             } else {
@@ -1242,7 +1596,6 @@
         }
 
         function showNotify(msg) {
-            // ... (keep as is)
             const n = document.getElementById('notification');
             n.innerText = msg;
             n.style.opacity = 1;
@@ -1250,61 +1603,24 @@
             setTimeout(() => { n.style.opacity = 0; n.style.top = "35%"; }, 1500);
         }
 
-        function setupUI() {
-            // Nhẫn Trữ Vật Controls
-            document.getElementById('ring-opener').addEventListener('click', openStorageRing);
-            document.getElementById('close-modal-btn').addEventListener('click', closeStorageRing);
-            document.getElementById('use-stone-btn').addEventListener('click', useSpiritStone);
-            document.getElementById('use-all-stone-btn').addEventListener('click', useAllSpiritStones);
-
-            // Mobile Controls
-            document.getElementById('meditate-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); toggleMeditation()});
-            document.getElementById('meditate-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); toggleMeditation()});
-            
-            // Uy Ap Button (X)
-            document.getElementById('uy-ap-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); toggleUyAp()});
-            document.getElementById('uy-ap-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); toggleUyAp()});
-            
-            // Fly Up Button (Q)
-            document.getElementById('fly-up-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); keys.q = true;});
-            document.getElementById('fly-up-btn').addEventListener('touchend', (e)=>{e.preventDefault(); keys.q = false;});
-            document.getElementById('fly-up-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); keys.q = true;});
-            document.getElementById('fly-up-btn').addEventListener('mouseup', (e)=>{e.preventDefault(); keys.q = false;});
-
-            // Fly Down Button (Z)
-            document.getElementById('fly-down-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); keys.z = true;});
-            document.getElementById('fly-down-btn').addEventListener('touchend', (e)=>{e.preventDefault(); keys.z = false;});
-            document.getElementById('fly-down-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); keys.z = true;});
-            document.getElementById('fly-down-btn').addEventListener('mouseup', (e)=>{e.preventDefault(); keys.z = false;});
-        }
-
         function setupInputs() {
-            // ... (keep as is)
+            // Keyboard Controls
             document.addEventListener('keydown', e => {
                 const k = e.key.toLowerCase();
-                if(k==='w') keys.w=true; if(k==='s') keys.s=false; 
-                if(k==='a') keys.a=true; if(k==='d') keys.d=false; 
+                if(k==='w') keys.w=true; if(k==='a') keys.a=true; 
                 if(k==='q') keys.q=true;
                 if(k==='z') keys.z=true; 
-                if(k==='x') keys.x=true; 
                 if(k===' ') performAttack();
+                if(k==='x') performSkill(); // Nút Kĩ Năng mới
                 if(k==='c') toggleMeditation();
-            });
-            document.addEventListener('keyup', e => {
-                const k = e.key.toLowerCase();
-                if(k==='w') keys.w=false; if(k==='s') keys.s=false;
-                if(k==='a') keys.a=false; if(k==='d') keys.d=false;
-                if(k==='q') keys.q=false;
-                if(k==='z') keys.z=false;
-                if(k==='x') toggleUyAp(); 
-            });
-            document.addEventListener('keydown', e => {
-                const k = e.key.toLowerCase();
                 if(k==='s') keys.s=true;
                 if(k==='d') keys.d=true;
             });
             document.addEventListener('keyup', e => {
                 const k = e.key.toLowerCase();
+                if(k==='w') keys.w=false; if(k==='a') keys.a=false;
+                if(k==='q') keys.q=false;
+                if(k==='z') keys.z=false;
                 if(k==='s') keys.s=false;
                 if(k==='d') keys.d=false;
             });
@@ -1314,6 +1630,10 @@
             const atk = document.getElementById('attack-btn');
             atk.addEventListener('touchstart', (e)=>{e.preventDefault(); performAttack()});
             atk.addEventListener('mousedown', (e)=>{e.preventDefault(); performAttack()});
+
+            const skill = document.getElementById('skill-btn');
+            skill.addEventListener('touchstart', (e)=>{e.preventDefault(); performSkill()});
+            skill.addEventListener('mousedown', (e)=>{e.preventDefault(); performSkill()});
 
             const joy = document.getElementById('joystick-zone');
             const knob = document.getElementById('joystick-knob');
@@ -1338,6 +1658,28 @@
                 joystickVec.x=0; 
                 joystickVec.y=0;
             });
+            
+            // Nhẫn Trữ Vật Controls
+            document.getElementById('ring-opener').addEventListener('click', openStorageRing);
+            document.getElementById('close-modal-btn').addEventListener('click', closeStorageRing);
+            document.getElementById('use-stone-btn').addEventListener('click', useSpiritStone);
+            document.getElementById('use-all-stone-btn').addEventListener('click', useAllSpiritStones);
+
+            // Mobile Controls
+            document.getElementById('meditate-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); toggleMeditation()});
+            document.getElementById('meditate-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); toggleMeditation()});
+            
+            // Fly Up Button (Q)
+            document.getElementById('fly-up-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); keys.q = true;});
+            document.getElementById('fly-up-btn').addEventListener('touchend', (e)=>{e.preventDefault(); keys.q = false;});
+            document.getElementById('fly-up-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); keys.q = true;});
+            document.getElementById('fly-up-btn').addEventListener('mouseup', (e)=>{e.preventDefault(); keys.q = false;});
+
+            // Fly Down Button (Z)
+            document.getElementById('fly-down-btn').addEventListener('touchstart', (e)=>{e.preventDefault(); keys.z = true;});
+            document.getElementById('fly-down-btn').addEventListener('touchend', (e)=>{e.preventDefault(); keys.z = false;});
+            document.getElementById('fly-down-btn').addEventListener('mousedown', (e)=>{e.preventDefault(); keys.z = true;});
+            document.getElementById('fly-down-btn').addEventListener('mouseup', (e)=>{e.preventDefault(); keys.z = false;});
         }
 
         function onWindowResize() {
